@@ -1,17 +1,16 @@
 ﻿using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Book_O_Series.ViewModel;
+using Book_O_Series.ViewModels;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Fragments
 {
     public class AboutFragment : Android.Support.V4.App.Fragment, IFragmentVisible
     {
+        private Button _learnMoreButton;
 
         public static AboutFragment NewInstance() =>
             new AboutFragment { Arguments = new Bundle() };
-
-        public AboutViewModel ViewModel { get; set; }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
@@ -20,20 +19,24 @@ namespace Book_O_Series.Droid
             // Create your fragment here
         }
 
-        Button learnMoreButton;
-
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
             var view = inflater.Inflate(Resource.Layout.fragment_about, container, false);
             ViewModel = new AboutViewModel();
-            learnMoreButton = view.FindViewById<Button>(Resource.Id.button_learn_more);
+            _learnMoreButton = view.FindViewById<Button>(Resource.Id.button_learn_more);
             return view;
         }
 
         public override void OnStart()
         {
             base.OnStart();
-            learnMoreButton.Click += LearnMoreButton_Click;
+            _learnMoreButton.Click += LearnMoreButton_Click;
+        }
+
+        public override void OnStop()
+        {
+            base.OnStop();
+            _learnMoreButton.Click -= LearnMoreButton_Click;
         }
 
         private void LearnMoreButton_Click(object sender, System.EventArgs e)
@@ -41,15 +44,11 @@ namespace Book_O_Series.Droid
             ViewModel.OpenWebCommand.Execute(null);
         }
 
-        public override void OnStop()
-        {
-            base.OnStop();
-            learnMoreButton.Click -= LearnMoreButton_Click;
-        }
-
         public void BecameVisible()
         {
         }
+
+        public AboutViewModel ViewModel { get; set; }
     }
 }
 

@@ -3,6 +3,7 @@ using System;
 using Android.App;
 using Android.OS;
 using Android.Runtime;
+using Book_O_Series.Droid.Helpers;
 using Book_O_Series.Helpers;
 using Book_O_Series.Interfaces;
 using Plugin.CurrentActivity;

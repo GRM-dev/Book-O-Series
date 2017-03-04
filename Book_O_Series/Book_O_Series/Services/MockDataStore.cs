@@ -2,58 +2,49 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Book_O_Series.Model;
+using Book_O_Series.Models;
 
 namespace Book_O_Series.Services
 {
     public class MockDataStore : IDataStore<Item>
     {
-        bool isInitialized;
-        List<Item> items;
+        private bool _isInitialized;
+        private List<Item> _items;
 
         public async Task<bool> AddItemAsync(Item item)
         {
             await InitializeAsync();
-
-            items.Add(item);
-
+            _items.Add(item);
             return await Task.FromResult(true);
         }
 
         public async Task<bool> UpdateItemAsync(Item item)
         {
             await InitializeAsync();
-
-            var _item = items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
-            items.Remove(_item);
-            items.Add(item);
-
+            var dItem = _items.FirstOrDefault(arg => arg.Id == item.Id);
+            _items.Remove(dItem);
+            _items.Add(item);
             return await Task.FromResult(true);
         }
 
         public async Task<bool> DeleteItemAsync(Item item)
         {
             await InitializeAsync();
-
-            var _item = items.Where((Item arg) => arg.Id == item.Id).FirstOrDefault();
-            items.Remove(_item);
-
+            var dItem = _items.FirstOrDefault(arg => arg.Id == item.Id);
+            _items.Remove(dItem);
             return await Task.FromResult(true);
         }
 
         public async Task<Item> GetItemAsync(string id)
         {
             await InitializeAsync();
-
-            return await Task.FromResult(items.FirstOrDefault(s => s.Id == id));
+            return await Task.FromResult(_items.FirstOrDefault(s => s.Id == id));
         }
 
         public async Task<IEnumerable<Item>> GetItemsAsync(bool forceRefresh = false)
         {
             await InitializeAsync();
-
-            return await Task.FromResult(items);
+            return await Task.FromResult(_items);
         }
 
         public Task<bool> PullLatestAsync()
@@ -69,11 +60,11 @@ namespace Book_O_Series.Services
 
         public async Task InitializeAsync()
         {
-            if (isInitialized)
-                return;
+            if (_isInitialized)
+            { return; }
 
-            items = new List<Item>();
-            var _items = new List<Item>
+            _items = new List<Item>();
+            var dItem = new List<Item>
             {
                 new Item { Id = Guid.NewGuid().ToString(), Text = "Buy some cat food", Description="The cats are hungry"},
                 new Item { Id = Guid.NewGuid().ToString(), Text = "Learn F#", Description="Seems like a functional idea"},
@@ -83,12 +74,11 @@ namespace Book_O_Series.Services
                 new Item { Id = Guid.NewGuid().ToString(), Text = "Finish a todo list", Description="Done"},
             };
 
-            foreach (Item item in _items)
+            foreach (var item in dItem)
             {
-                items.Add(item);
+                _items.Add(item);
             }
-
-            isInitialized = true;
+            _isInitialized = true;
         }
     }
 }

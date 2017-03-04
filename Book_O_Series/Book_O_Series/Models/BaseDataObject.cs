@@ -1,8 +1,8 @@
-﻿using Book_O_Series.Helpers;
+﻿using System;
+using Book_O_Series.Helpers;
 using Book_O_Series.Interfaces;
-using System;
 
-namespace Book_O_Series.Model
+namespace Book_O_Series.Models
 {
     public class BaseDataObject : ObservableObject, IBaseDataObject
     {

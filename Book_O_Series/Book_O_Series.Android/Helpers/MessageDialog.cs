@@ -4,7 +4,7 @@ using Android.Widget;
 using Book_O_Series.Interfaces;
 using Plugin.CurrentActivity;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Helpers
 {
     public class MessageDialog : IMessageDialog
     {
@@ -22,7 +22,7 @@ namespace Book_O_Series.Droid
 
             activity.RunOnUiThread(() =>
             {
-                AlertDialog alert = builder.Create();
+                var alert = builder.Create();
                 alert.Show();
             });
         }
@@ -37,7 +37,6 @@ namespace Book_O_Series.Droid
             });
 
         }
-
 
         public void SendConfirmation(string message, string title, Action<bool> confirmationAction)
         {
@@ -56,7 +55,7 @@ namespace Book_O_Series.Droid
 
             activity.RunOnUiThread(() =>
             {
-                AlertDialog alert = builder.Create();
+                var alert = builder.Create();
                 alert.Show();
             });
         }

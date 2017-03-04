@@ -3,7 +3,7 @@ using Android.Content;
 using Android.OS;
 using Android.Support.V7.App;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Activities
 {
     [Activity(Label = "@string/app_name", Theme = "@style/SplashTheme", MainLauncher = true)]
     public class SplashActivity : AppCompatActivity

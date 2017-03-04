@@ -1,36 +1,37 @@
 ﻿using Book_O_Series.Helpers;
-using Book_O_Series.Model;
+using Book_O_Series.Models;
 using Book_O_Series.Services;
 
-
-
-namespace Book_O_Series.ViewModel
+namespace Book_O_Series.ViewModels
 {
     public class BaseViewModel : ObservableObject
     {
-        /// <summary>
-        /// Get the azure service instance
-        /// </summary>
-        public IDataStore<Item> DataStore => ServiceLocator.Instance.Get<IDataStore<Item>>();
+        private bool _isBusy;
 
-        bool isBusy = false;
-        public bool IsBusy
-        {
-            get { return isBusy; }
-            set { SetProperty(ref isBusy, value); }
-        }
         /// <summary>
         /// Private backing field to hold the title
         /// </summary>
-        string title = string.Empty;
+        private string _title = string.Empty;
+
+        public bool IsBusy
+        {
+            get { return _isBusy; }
+            set { SetProperty(ref _isBusy, value); }
+        }
+
         /// <summary>
         /// Public property to set and get the title of the item
         /// </summary>
         public string Title
         {
-            get { return title; }
-            set { SetProperty(ref title, value); }
+            get { return _title; }
+            set { SetProperty(ref _title, value); }
         }
+
+        /// <summary>
+        /// Get the azure service instance
+        /// </summary>
+        public IDataStore<Item> DataStore => ServiceLocator.Instance.Get<IDataStore<Item>>();
     }
 }
 

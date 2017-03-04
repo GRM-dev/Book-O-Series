@@ -6,10 +6,9 @@ using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
 using Android.Views;
-using Android.Widget;
-using Book_O_Series.Helpers;
+using Book_O_Series.Droid.Fragments;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Activities
 {
     [Activity(Label = "@string/app_name",
         LaunchMode = LaunchMode.SingleInstance,
@@ -17,26 +16,23 @@ namespace Book_O_Series.Droid
         ScreenOrientation = ScreenOrientation.Portrait)]
     public class MainActivity : BaseActivity
     {
-
-        protected override int LayoutResource => Resource.Layout.activity_main;
-
-        ViewPager pager;
-        TabsAdapter adapter;
+        private ViewPager _pager;
+        private TabsAdapter _adapter;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
-            adapter = new TabsAdapter(this, SupportFragmentManager);
-            pager = FindViewById<ViewPager>(Resource.Id.viewpager);
+            _adapter = new TabsAdapter(this, SupportFragmentManager);
+            _pager = FindViewById<ViewPager>(Resource.Id.viewpager);
             var tabs = FindViewById<TabLayout>(Resource.Id.tabs);
-            pager.Adapter = adapter;
-            tabs.SetupWithViewPager(pager);
-            pager.OffscreenPageLimit = 3;
+            _pager.Adapter = _adapter;
+            tabs.SetupWithViewPager(_pager);
+            _pager.OffscreenPageLimit = 3;
 
-            pager.PageSelected += (sender, args) =>
+            _pager.PageSelected += (sender, args) =>
             {
-                var fragment = adapter.InstantiateItem(pager, args.Position) as IFragmentVisible;
+                var fragment = _adapter.InstantiateItem(_pager, args.Position) as IFragmentVisible;
 
                 fragment?.BecameVisible();
             };
@@ -46,11 +42,8 @@ namespace Book_O_Series.Droid
                 var intent = new Intent(this, typeof(AddItemActivity)); ;
                 StartActivity(intent);
             };
-
             SupportActionBar.SetDisplayHomeAsUpEnabled(false);
             SupportActionBar.SetHomeButtonEnabled(false);
-
-
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -59,21 +52,22 @@ namespace Book_O_Series.Droid
             return base.OnCreateOptionsMenu(menu);
         }
 
+        protected override int LayoutResource => Resource.Layout.activity_main;
     }
 
-    class TabsAdapter : FragmentStatePagerAdapter
+    public class TabsAdapter : FragmentStatePagerAdapter
     {
-        string[] titles;
+        private string[] _titles;
 
-        public override int Count => titles.Length;
+        public override int Count => _titles.Length;
 
         public TabsAdapter(Context context, Android.Support.V4.App.FragmentManager fm) : base(fm)
         {
-            titles = context.Resources.GetTextArray(Resource.Array.sections);
+            _titles = context.Resources.GetTextArray(Resource.Array.sections);
         }
 
         public override Java.Lang.ICharSequence GetPageTitleFormatted(int position) =>
-                            new Java.Lang.String(titles[position]);
+                            new Java.Lang.String(_titles[position]);
 
         public override Android.Support.V4.App.Fragment GetItem(int position)
         {
@@ -81,14 +75,13 @@ namespace Book_O_Series.Droid
             {
                 case 0: return BrowseFragment.NewInstance();
                 case 1: return AboutFragment.NewInstance();
+                default:
+                    return null;
             }
-            return null;
         }
 
         public override int GetItemPosition(Java.Lang.Object frag) => PositionNone;
-
     }
-
 }
 
 

@@ -8,8 +8,8 @@ namespace Book_O_Series.Helpers
     /// </summary>
     public sealed class ServiceLocator
     {
-        static readonly Lazy<ServiceLocator> instance = new Lazy<ServiceLocator>(() => new ServiceLocator());
-        readonly Dictionary<Type, Lazy<object>> registeredServices = new Dictionary<Type, Lazy<object>>();
+        private static readonly Lazy<ServiceLocator> instance = new Lazy<ServiceLocator>(() => new ServiceLocator());
+        private readonly Dictionary<Type, Lazy<object>> registeredServices = new Dictionary<Type, Lazy<object>>();
 
         /// <summary>
         ///     Singleton instance for default service locator
@@ -36,8 +36,7 @@ namespace Book_O_Series.Helpers
         /// <returns>Implementation</returns>
         public T Get<T>() where T : class
         {
-            Lazy<object> service;
-            if (registeredServices.TryGetValue(typeof(T), out service))
+            if (registeredServices.TryGetValue(typeof(T), out Lazy<object> service))
             {
                 return (T)service.Value;
             }

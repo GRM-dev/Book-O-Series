@@ -1,28 +1,31 @@
-﻿namespace Book_O_Series.Model
+﻿namespace Book_O_Series.Models
 {
     public class Item : BaseDataObject
     {
-        public Item() : base()
-        {
-        }
+        private string _description = string.Empty;
+
         /// <summary>
         /// Private backing field to hold the text
         /// </summary>
-        string text = string.Empty;
+        string _text = string.Empty;
+
+        public Item() : base()
+        {
+        }
+
         /// <summary>
         /// Public property to set and get the text of the item
         /// </summary>
         public string Text
         {
-            get { return text; }
-            set { SetProperty(ref text, value); }
+            get { return _text; }
+            set { SetProperty(ref _text, value); }
         }
 
-        string description = string.Empty;
         public string Description
         {
-            get { return description; }
-            set { SetProperty(ref description, value); }
+            get { return _description; }
+            set { SetProperty(ref _description, value); }
         }
 
     }

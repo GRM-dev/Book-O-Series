@@ -1,18 +1,15 @@
-﻿using Book_O_Series.Model;
-using Book_O_Series.ViewModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Book_O_Series.Models;
+using Book_O_Series.ViewModels;
 
 namespace Book_O_Series.UWP.Views
 {
     public sealed partial class MainPivot : Page
     {
-        public ItemsViewModel BrowseViewModel { get; private set; }
-        public AboutViewModel AboutViewModel { get; private set; }
-
-        Task loadItems;
+        private Task _loadItems;
 
         public MainPivot()
         {
@@ -23,24 +20,24 @@ namespace Book_O_Series.UWP.Views
             BrowseViewModel = new ItemsViewModel();
             AboutViewModel = new AboutViewModel();
 
-            loadItems = BrowseViewModel.ExecuteLoadItemsCommand();
+            _loadItems = BrowseViewModel.ExecuteLoadItemsCommand();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             if (BrowseViewModel.Items.Count == 0)
-                loadItems.Wait();
+                _loadItems.Wait();
         }
 
         public void AddItem_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(AddItems), BrowseViewModel);
+            Frame.Navigate(typeof(AddItems), BrowseViewModel);
         }
 
         private void GvItems_ItemClick(object sender, ItemClickEventArgs e)
         {
             var item = e.ClickedItem as Item;
-            this.Frame.Navigate(typeof(BrowseItemDetail), item);
+            Frame.Navigate(typeof(BrowseItemDetail), item);
         }
 
         private void PivotItemChanged(object sender, SelectionChangedEventArgs e)
@@ -53,7 +50,12 @@ namespace Book_O_Series.UWP.Views
                 case 1:
                     Toolbar.Visibility = Visibility.Collapsed;
                     break;
+                default:
+                    break;
             }
         }
+
+        public ItemsViewModel BrowseViewModel { get; }
+        public AboutViewModel AboutViewModel { get; }
     }
 }

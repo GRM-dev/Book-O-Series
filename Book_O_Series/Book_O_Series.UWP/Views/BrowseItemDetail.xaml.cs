@@ -1,23 +1,23 @@
-﻿using Book_O_Series.Model;
-using Book_O_Series.ViewModel;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
+using Book_O_Series.Models;
+using Book_O_Series.ViewModels;
 
 namespace Book_O_Series.UWP.Views
 {
     public sealed partial class BrowseItemDetail : Page
     {
-        public ItemDetailViewModel ViewModel { get; set; }
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            ViewModel = new ItemDetailViewModel((Item)e.Parameter);
+            DataContext = ViewModel;
+        }
 
         public BrowseItemDetail()
         {
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            ViewModel = new ItemDetailViewModel((Item)e.Parameter);
-            DataContext = ViewModel;
-        }
+        public ItemDetailViewModel ViewModel { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Book_O_Series.Helpers
 {
-    class MessagingCenterAlert
+    public class MessagingCenterAlert
     {
         /// <summary>
         /// Init this instance.

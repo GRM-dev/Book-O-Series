@@ -1,26 +1,20 @@
-﻿
-using System;
+﻿using System;
 using Android.App;
 using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Widget;
 using Book_O_Series.Helpers;
-using Book_O_Series.Model;
-using Book_O_Series.ViewModel;
-using Plugin.CurrentActivity;
+using Book_O_Series.Models;
+using Book_O_Series.ViewModels;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Activities
 {
 
     [Activity(Label = "AddItemActivity")]
     public class AddItemActivity : Activity
     {
-        FloatingActionButton saveButton;
-        EditText title, description;
-
-        public Item Item { get; set; }
-        public ItemsViewModel viewModel { get; set; }
-        public BaseViewModel baseModel { get; set; }
+        private FloatingActionButton _saveButton;
+        private EditText _title, _description;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -28,21 +22,27 @@ namespace Book_O_Series.Droid
 
             // Create your application here
             SetContentView(Resource.Layout.activity_add_item);
-            saveButton = FindViewById<FloatingActionButton>(Resource.Id.save_button);
-            title = FindViewById<EditText>(Resource.Id.txtTitle);
-            description = FindViewById<EditText>(Resource.Id.txtDesc);
+            _saveButton = FindViewById<FloatingActionButton>(Resource.Id.save_button);
+            _title = FindViewById<EditText>(Resource.Id.txtTitle);
+            _description = FindViewById<EditText>(Resource.Id.txtDesc);
 
-            saveButton.Click += SaveButton_Click;
+            _saveButton.Click += SaveButton_Click;
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            var _item = new Item();
-            _item.Text = title.Text;
-            _item.Description = description.Text;
+            var item = new Item
+            {
+                Text = _title.Text,
+                Description = _description.Text
+            };
 
-            MessagingCenter.Send(this, "AddItem", _item);
+            MessagingCenter.Send(this, "AddItem", item);
             Finish();
         }
+
+        public Item Item { get; set; }
+        public ItemsViewModel ViewModel { get; set; }
+        public BaseViewModel BaseModel { get; set; }
     }
 }

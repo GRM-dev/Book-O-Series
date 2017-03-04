@@ -7,13 +7,11 @@ namespace Book_O_Series.UWP.Helpers
 {
     public class MessageDialog : IMessageDialog
     {
-
         public async void SendMessage(string message, string title = null)
         {
             var dialog = new MessageBox(message, title ?? string.Empty);
             await dialog.ShowAsync();
         }
-
 
         public void SendToast(string message)
         {
@@ -26,7 +24,6 @@ namespace Book_O_Series.UWP.Helpers
             dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
             dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
             var res = await dialog.ShowAsync();
-
             confirmationAction?.Invoke((int)res.Id == 0);
         }
     }

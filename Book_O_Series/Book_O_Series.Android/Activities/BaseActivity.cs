@@ -2,7 +2,7 @@
 using Android.Support.V7.App;
 using Android.Support.V7.Widget;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Activities
 {
     public class BaseActivity : AppCompatActivity
     {
@@ -16,7 +16,6 @@ namespace Book_O_Series.Droid
                 SetSupportActionBar(Toolbar);
                 SupportActionBar.SetDisplayHomeAsUpEnabled(true);
                 SupportActionBar.SetHomeButtonEnabled(true);
-
             }
         }
 

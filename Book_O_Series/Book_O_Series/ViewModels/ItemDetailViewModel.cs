@@ -1,25 +1,24 @@
-﻿using Book_O_Series.Model;
+﻿using Book_O_Series.Models;
 
-
-namespace Book_O_Series.ViewModel
+namespace Book_O_Series.ViewModels
 {
     public class ItemDetailViewModel : BaseViewModel
     {
-        public Item Item { get; set; }
+        private int _quantity = 1;
+
         public ItemDetailViewModel(Item item = null)
         {
-            if (item != null)
-            {
-                Title = item.Text;
-                Item = item;
-            }
+            if (item == null) return;
+            Title = item.Text;
+            Item = item;
         }
 
-        int quantity = 1;
+        public Item Item { get; set; }
+
         public int Quantity
         {
-            get { return quantity; }
-            set { SetProperty(ref quantity, value); }
+            get { return _quantity; }
+            set { SetProperty(ref _quantity, value); }
         }
     }
 }

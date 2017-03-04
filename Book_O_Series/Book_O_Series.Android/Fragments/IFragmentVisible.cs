@@ -1,6 +1,6 @@
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Fragments
 {
-    interface IFragmentVisible
+    public interface IFragmentVisible
     {
         void BecameVisible();
     }

@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Windows.Input;
 using Plugin.Share;
 
-namespace Book_O_Series.ViewModel
+namespace Book_O_Series.ViewModels
 {
     public class AboutViewModel : BaseViewModel
     {
@@ -13,14 +12,13 @@ namespace Book_O_Series.ViewModel
             OpenWebCommand = new OpenWeb();
         }
 
-
         /// <summary>
         /// Command to open browser to xamarin.com
         /// </summary>
         public ICommand OpenWebCommand { get; }
     }
 
-    class OpenWeb : ICommand
+    public class OpenWeb : ICommand
     {
         public event EventHandler CanExecuteChanged;
 

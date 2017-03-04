@@ -1,69 +1,58 @@
-﻿
-using System;
+﻿using System;
+using System.Threading.Tasks;
+using Android.App;
+using Android.Content;
 using Android.OS;
+using Android.Support.V4.Widget;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
-using Book_O_Series.ViewModel;
-using Android.Support.V4.Widget;
-using Android.App;
-using Android.Content;
+using Book_O_Series.Droid.Activities;
+using Book_O_Series.Droid.Helpers;
 using Book_O_Series.Helpers;
+using Book_O_Series.Models;
 using Book_O_Series.Services;
-using System.Threading.Tasks;
-using Book_O_Series.Model;
+using Book_O_Series.ViewModels;
 
-namespace Book_O_Series.Droid
+namespace Book_O_Series.Droid.Fragments
 {
     public class BrowseFragment : Android.Support.V4.App.Fragment, IFragmentVisible
     {
+        private BrowseItemsAdapter _adapter;
+        private SwipeRefreshLayout _refresher;
+        private Task _loadItems;
+        private ProgressBar _progress;
 
         public static BrowseFragment NewInstance() =>
             new BrowseFragment { Arguments = new Bundle() };
-
-        BrowseItemsAdapter adapter;
-        SwipeRefreshLayout refresher;
-        Task loadItems;
-
-        ProgressBar progress;
-        public ItemsViewModel ViewModel
-        {
-            get;
-            set;
-        }
 
         public override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             ServiceLocator.Instance.Register<MockDataStore, MockDataStore>();
-
             ViewModel = new ItemsViewModel();
-            loadItems = ViewModel.ExecuteLoadItemsCommand();
-
+            _loadItems = ViewModel.ExecuteLoadItemsCommand();
 
             MessagingCenter.Subscribe<AddItemActivity, Item>(this, "AddItem", async (obj, item) =>
             {
-                var _item = item as Item;
-                await ViewModel.AddItem(_item);
+                await ViewModel.AddItem(item);
             });
         }
 
         public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
         {
-            View view = inflater.Inflate(Resource.Layout.fragment_browse, container, false);
-            var recyclerView =
-                view.FindViewById<RecyclerView>(Resource.Id.recyclerView);
+            var view = inflater.Inflate(Resource.Layout.fragment_browse, container, false);
+            var recyclerView = view.FindViewById<RecyclerView>(Resource.Id.recyclerView);
 
             recyclerView.HasFixedSize = true;
-            recyclerView.SetAdapter(adapter = new BrowseItemsAdapter(Activity, ViewModel));
+            recyclerView.SetAdapter(_adapter = new BrowseItemsAdapter(Activity, ViewModel));
 
-            refresher = view.FindViewById<SwipeRefreshLayout>(Resource.Id.refresher);
+            _refresher = view.FindViewById<SwipeRefreshLayout>(Resource.Id.refresher);
+            _refresher.SetColorSchemeColors(Resource.Color.accent);
 
-            refresher.SetColorSchemeColors(Resource.Color.accent);
-
-            progress = view.FindViewById<ProgressBar>(Resource.Id.progressbar_loading);
-            progress.Visibility = ViewStates.Gone;
+            _progress = view.FindViewById<ProgressBar>(Resource.Id.progressbar_loading);
+            _progress.Visibility = ViewStates.Gone;
 
             return view;
         }
@@ -72,20 +61,20 @@ namespace Book_O_Series.Droid
         public override void OnStart()
         {
             base.OnStart();
-
-            refresher.Refresh += Refresher_Refresh;
-            adapter.ItemClick += Adapter_ItemClick;
-
+            _refresher.Refresh += Refresher_Refresh;
+            _adapter.ItemClick += Adapter_ItemClick;
             if (ViewModel.Items.Count == 0)
-                loadItems.Wait();
+            {
+                _loadItems.Wait();
+            }
         }
 
 
         public override void OnStop()
         {
             base.OnStop();
-            refresher.Refresh -= Refresher_Refresh;
-            adapter.ItemClick -= Adapter_ItemClick;
+            _refresher.Refresh -= Refresher_Refresh;
+            _adapter.ItemClick -= Adapter_ItemClick;
         }
 
         public override void OnDestroy()
@@ -106,28 +95,32 @@ namespace Book_O_Series.Droid
         private async void Refresher_Refresh(object sender, EventArgs e)
         {
             await ViewModel.ExecuteLoadItemsCommand();
-            refresher.Refreshing = false;
+            _refresher.Refreshing = false;
         }
 
         public void BecameVisible()
         {
         }
+
+        public ItemsViewModel ViewModel
+        {
+            get;
+            set;
+        }
     }
 
-    class BrowseItemsAdapter : BaseRecycleViewAdapter
+    public class BrowseItemsAdapter : BaseRecycleViewAdapter
     {
-
-        ItemsViewModel viewModel;
-        Activity activity;
+        private ItemsViewModel _viewModel;
+        private Activity _activity;
 
         public BrowseItemsAdapter(Activity activity, ItemsViewModel viewModel)
         {
-            this.viewModel = viewModel;
-            this.activity = activity;
-
-            this.viewModel.Items.CollectionChanged += (sender, args) =>
+            this._viewModel = viewModel;
+            this._activity = activity;
+            this._viewModel.Items.CollectionChanged += (sender, args) =>
             {
-                this.activity.RunOnUiThread(NotifyDataSetChanged);
+                this._activity.RunOnUiThread(NotifyDataSetChanged);
             };
         }
 
@@ -135,10 +128,8 @@ namespace Book_O_Series.Droid
         public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
         {
             //Setup your layout here
-            View itemView = null;
-            var id = Resource.Layout.item_browse;
-            itemView = LayoutInflater.From(parent.Context).Inflate(id, parent, false);
-
+            const int id = Resource.Layout.item_browse;
+            var itemView = LayoutInflater.From(parent.Context).Inflate(id, parent, false);
             var vh = new MyViewHolder(itemView, OnClick, OnLongClick);
             return vh;
         }
@@ -146,7 +137,7 @@ namespace Book_O_Series.Droid
         // Replace the contents of a view (invoked by the layout manager)
         public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
         {
-            var item = viewModel.Items[position];
+            var item = _viewModel.Items[position];
 
             // Replace the contents of the view with that element
             var myHolder = holder as MyViewHolder;
@@ -154,24 +145,22 @@ namespace Book_O_Series.Droid
             myHolder.DetailTextView.Text = item.Description;
         }
 
-        public override int ItemCount => viewModel.Items.Count;
-
-
+        public override int ItemCount => _viewModel.Items.Count;
     }
 
     public class MyViewHolder : RecyclerView.ViewHolder
     {
-        public TextView TextView { get; set; }
-        public TextView DetailTextView { get; set; }
-
         public MyViewHolder(View itemView, Action<RecyclerClickEventArgs> clickListener,
-                            Action<RecyclerClickEventArgs> longClickListener) : base(itemView)
+            Action<RecyclerClickEventArgs> longClickListener) : base(itemView)
         {
             TextView = itemView.FindViewById<TextView>(Android.Resource.Id.Text1);
             DetailTextView = itemView.FindViewById<TextView>(Android.Resource.Id.Text2);
-            itemView.Click += (sender, e) => clickListener(new RecyclerClickEventArgs { View = itemView, Position = AdapterPosition });
+            itemView.Click += (sender, e) => clickListener(new RecyclerClickEventArgs {View = itemView, Position = AdapterPosition});
             itemView.LongClick += (sender, e) => longClickListener(new RecyclerClickEventArgs { View = itemView, Position = AdapterPosition });
         }
+
+        public TextView TextView { get; set; }
+        public TextView DetailTextView { get; set; }
     }
 
 }
