@@ -31,6 +31,7 @@ namespace Book_O_Series
                         Title = "About",
                         Icon = Device.OnPlatform("tab_about.png",null,null)
                     },
+                    new MenuPageView{Title = "menuPodglad" },
                 }
             };
         }
